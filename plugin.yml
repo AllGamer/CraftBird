@@ -1,0 +1,12 @@
+name: CraftBird
+main: net.craftrepo.CraftBird.CraftBird
+version: 1.0
+commands:
+    tweet:
+        description: Send a Tweet
+        usage: |
+               /<command> [text]
+    twitterpin:
+        description: Authenticate your username with the API
+        usage: |
+               /<command> [pin]
