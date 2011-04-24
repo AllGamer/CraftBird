@@ -39,8 +39,8 @@ public class CraftBird extends JavaPlugin
 	public static Configuration config;
 	public static String id = null;
 	Twitter twitter = new TwitterFactory().getInstance();
-	RequestToken requestToken;
-	AccessToken accessToken = null;
+	public RequestToken requestToken;
+	public AccessToken accessToken = null;
 	TwitterUpdates tu;
 	Thread t;
 
@@ -132,16 +132,18 @@ public class CraftBird extends JavaPlugin
 		try 
 		{
 			config.load();
-			String access = config.getProperty("accessToken").toString();
-			if(access == null)
+			//String access = config.getProperty("accessToken").toString();
+			if(config.getProperty("accessToken") == null)
 			{
 				twitter.setOAuthConsumer("8Nxl52fGs6sheLOATyklXA", "MahFaucXaRySLARXnxVkUyLOBcDQN1BhzKzAsj9Mc");
-				RequestToken requestToken = twitter.getOAuthRequestToken();
+				requestToken = twitter.getOAuthRequestToken();
 				log.info(logPrefix + " Goto " + requestToken.getAuthorizationURL() + " to authenticate " + this.plugin);
 				return true;
 			}
 			else
 			{
+				twitter.setOAuthConsumer("8Nxl52fGs6sheLOATyklXA", "MahFaucXaRySLARXnxVkUyLOBcDQN1BhzKzAsj9Mc");
+				getAccessToken("0");
 				return true;
 			}
 		} 
@@ -156,7 +158,7 @@ public class CraftBird extends JavaPlugin
 	{
 		try 
 		{
-			if (pin.length() > 0) 
+			if (pin.length() > 2) 
 			{
 				accessToken = twitter.getOAuthAccessToken(requestToken, pin);
 				config.load();
@@ -168,7 +170,7 @@ public class CraftBird extends JavaPlugin
 			else 
 			{
 				config.load();
-				AccessToken oldtoken = (AccessToken)config.getProperty("accessToken");
+				AccessToken oldtoken = new AccessToken(config.getProperty("accessToken").toString(),config.getProperty("accessTokenSecret").toString());
 				twitter.setOAuthAccessToken(oldtoken);
 			}
 		}
@@ -185,11 +187,12 @@ public class CraftBird extends JavaPlugin
 		String command = commandArg.getName().toLowerCase();
 		if (command.equalsIgnoreCase("twitterpin")) 
 		{
-			if (arg[0].length() > 0)
+			if (arg.length > 0)
 			{
 				if (CraftBird.Permissions.has(player, "twitter.tweet"))
 				{
 					getAccessToken(arg[0]);
+					player.sendMessage(logPrefix + " Sucessfully added your pin!");
 					return true;
 				}
 				else
@@ -204,13 +207,20 @@ public class CraftBird extends JavaPlugin
 		}
 		if (command.equalsIgnoreCase("tweet"))
 		{
-			if (arg[0].length() > 0)
+			if (arg.length > 0)
 			{
 				if (CraftBird.Permissions.has(player, "tweet.tweet"))
 				{
+					String result = "";
+					for (String s : arg)
+					{
+						result += s + " ";
+					}
 					try 
 					{
-						twitter.updateStatus(arg[0]);
+						twitter.updateStatus(result);
+						player.sendMessage(logPrefix + " Sucessfully tweeted!");
+						result = "";
 					} 
 					catch (TwitterException e) 
 					{
