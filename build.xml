@@ -20,6 +20,7 @@
     </path>
     <target name="init">
         <mkdir dir="bin"/>
+        <mkdir dir="bin/twitter4j"/>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
                 <exclude name="**/*.launch"/>

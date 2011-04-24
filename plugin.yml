@@ -1,6 +1,6 @@
 name: CraftBird
 main: net.craftrepo.CraftBird.CraftBird
-version: 1.0
+version: 1.0.0
 commands:
     tweet:
         description: Send a Tweet
