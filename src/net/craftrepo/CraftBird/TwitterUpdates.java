@@ -5,7 +5,7 @@ import java.util.List;
 import twitter4j.*;
 
 /**
- * CraftRepo Bans for Bukkit
+ * CraftRepo CraftBird for Bukkit
  * @author AllGamer
  * 
  * Copyright 2011 AllGamer, LLC.
@@ -24,9 +24,9 @@ public class TwitterUpdates extends Thread
 
 	public void run()
 	{
-		if(CraftBird.twitter.getAuthorization().isEnabled())
+		while (true)
 		{
-			while (true)
+			if(CraftBird.twitter.getAuthorization().isEnabled())
 			{
 				net.craftrepo.CraftBird.CraftBird.config.load();
 				String[] users = ((String[]) net.craftrepo.CraftBird.CraftBird.config.getProperty("users"));
@@ -43,7 +43,8 @@ public class TwitterUpdates extends Thread
 							{
 								if (status.getUser().getName().contains(s))
 								{
-									CraftBird.notifyPlayers(status.getUser().getName() + ":" + status.getText());
+									CraftBird.log.info("[Twitter] " + status.getUser().getName() + ":" + status.getText());
+									CraftBird.notifyPlayers("[Twitter] " + status.getUser().getName() + ":" + status.getText());
 								}
 							}
 							lastStatuses = statuses;
@@ -52,35 +53,8 @@ public class TwitterUpdates extends Thread
 					catch (TwitterException e) 
 					{
 						e.printStackTrace();
-						try 
-						{
-							Thread.sleep(300000);
-						}
-						catch (InterruptedException e1) 
-						{
-							e1.printStackTrace();
-						}
 					}
 				}
-				try 
-				{
-					Thread.sleep(300000);
-				}
-				catch (InterruptedException e) 
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-		else
-		{
-			try 
-			{
-				Thread.sleep(300000);
-			}
-			catch (InterruptedException e) 
-			{
-				e.printStackTrace();
 			}
 		}
 	}

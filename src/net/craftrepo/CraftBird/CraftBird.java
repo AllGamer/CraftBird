@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.config.Configuration;
 
 import com.nijiko.permissions.PermissionHandler;
@@ -31,7 +32,7 @@ public class CraftBird extends JavaPlugin
 {
 	private final HashMap<Player, Boolean> debugees = new HashMap<Player, Boolean>();
 	public HashMap<String, Integer> items = new HashMap<String, Integer>();
-	private final Logger log = Logger.getLogger("Minecraft");
+	public final Logger log = Logger.getLogger("Minecraft");
 	public static PermissionHandler Permissions = null;
 	public static String logPrefix = "[CraftBird]";
 	private CraftBirdConfiguration confSetup;
@@ -41,8 +42,7 @@ public class CraftBird extends JavaPlugin
 	Twitter twitter = new TwitterFactory().getInstance();
 	public RequestToken requestToken;
 	public AccessToken accessToken = null;
-	TwitterUpdates tu;
-	Thread t;
+	BukkitScheduler scheduler = this.getServer().getScheduler();
 
 	public void onEnable() 
 	{
@@ -51,8 +51,7 @@ public class CraftBird extends JavaPlugin
 		confSetup.setupConfigs();
 		if (startOAuth())
 		{
-			tu = new TwitterUpdates(this);
-			t = new Thread(tu);
+			scheduler.scheduleAsyncRepeatingTask(this.plugin, new TwitterUpdates(plugin), 120, 6000);
 			log.info(logPrefix + " version " + this.getDescription().getVersion() + " enabled!");
 		}
 		else
@@ -137,7 +136,7 @@ public class CraftBird extends JavaPlugin
 			{
 				twitter.setOAuthConsumer("8Nxl52fGs6sheLOATyklXA", "MahFaucXaRySLARXnxVkUyLOBcDQN1BhzKzAsj9Mc");
 				requestToken = twitter.getOAuthRequestToken();
-				log.info(logPrefix + " Goto " + requestToken.getAuthorizationURL() + " to authenticate " + this.plugin);
+				log.info(logPrefix + " Goto " + requestToken.getAuthorizationURL() + " to authenticate CraftBird.");
 				return true;
 			}
 			else
