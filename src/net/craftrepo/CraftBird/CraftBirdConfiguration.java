@@ -46,6 +46,8 @@ public class CraftBirdConfiguration
 
 				out.write("#CraftBird Configuration\n");
 				out.write("");
+				out.write("#Turn on updates? (true or false)\n");
+				out.write("updates: true");
 				out.write("\n");
 				out.write("#Users to get updates of.\n");
 				out.write("users:\n");
@@ -54,6 +56,7 @@ public class CraftBirdConfiguration
 				out.write("    - mollstam\n");
 				out.write("    - jahkob\n");
 				out.write("    - craftrepo\n");
+				out.write("\n");
 				out.write("\n");
 				out.write("#PLEASE DON'T TOUCH THIS! It auths you with twitter after the first time.\n");
 				out.write("accessToken:\n");

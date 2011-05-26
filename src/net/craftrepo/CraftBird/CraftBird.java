@@ -43,6 +43,7 @@ public class CraftBird extends JavaPlugin
 	public RequestToken requestToken;
 	public AccessToken accessToken = null;
 	BukkitScheduler scheduler = this.getServer().getScheduler();
+	public boolean updates = true;
 
 	public void onEnable() 
 	{
@@ -51,7 +52,6 @@ public class CraftBird extends JavaPlugin
 		confSetup.setupConfigs();
 		if (startOAuth())
 		{
-			scheduler.scheduleAsyncRepeatingTask(this.plugin, new TwitterUpdates(plugin), 120, 6000);
 			log.info(logPrefix + " version " + this.getDescription().getVersion() + " enabled!");
 		}
 		else
@@ -131,7 +131,6 @@ public class CraftBird extends JavaPlugin
 		try 
 		{
 			config.load();
-			//String access = config.getProperty("accessToken").toString();
 			if(config.getProperty("accessToken") == null)
 			{
 				twitter.setOAuthConsumer("8Nxl52fGs6sheLOATyklXA", "MahFaucXaRySLARXnxVkUyLOBcDQN1BhzKzAsj9Mc");
@@ -142,6 +141,7 @@ public class CraftBird extends JavaPlugin
 			else
 			{
 				twitter.setOAuthConsumer("8Nxl52fGs6sheLOATyklXA", "MahFaucXaRySLARXnxVkUyLOBcDQN1BhzKzAsj9Mc");
+				scheduler.scheduleAsyncRepeatingTask(this.plugin, new TwitterUpdates(plugin), 120, 6000);
 				getAccessToken("0");
 				return true;
 			}
@@ -184,7 +184,32 @@ public class CraftBird extends JavaPlugin
 	{
 		Player player = (Player) sender;
 		String command = commandArg.getName().toLowerCase();
-		if (command.equalsIgnoreCase("twitterpin")) 
+		if (command.equalsIgnoreCase("toggletweets"))
+		{
+			if (arg.length == 0)
+			{
+				if (CraftBird.Permissions.has(player, "twitter.tweet"))
+				{
+					if (updates)
+					{
+						scheduler.cancelAllTasks();
+					}
+					else
+					{
+						scheduler.scheduleAsyncRepeatingTask(this.plugin, new TwitterUpdates(plugin), 120, 6000);
+					}
+				}
+				else
+				{
+					player.sendMessage(ChatColor.RED + "You don't have permission to use that command!");
+				}
+			}
+			else
+			{
+				player.sendMessage("Correct usage is /toggletweets");
+			}
+		}
+		else if (command.equalsIgnoreCase("twitterpin")) 
 		{
 			if (arg.length > 0)
 			{
@@ -192,6 +217,7 @@ public class CraftBird extends JavaPlugin
 				{
 					getAccessToken(arg[0]);
 					player.sendMessage(logPrefix + " Sucessfully added your pin!");
+					scheduler.scheduleAsyncRepeatingTask(this.plugin, new TwitterUpdates(plugin), 120, 6000);
 					return true;
 				}
 				else
@@ -204,7 +230,7 @@ public class CraftBird extends JavaPlugin
 				player.sendMessage("Correct usage is /twitterpin [pin]");
 			}
 		}
-		if (command.equalsIgnoreCase("tweet"))
+		else if (command.equalsIgnoreCase("tweet"))
 		{
 			if (arg.length > 0)
 			{

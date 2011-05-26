@@ -26,18 +26,24 @@ public class TwitterUpdates extends Thread
 	{
 		while (true)
 		{
-			if(CraftBird.twitter.getAuthorization().isEnabled())
+			if (CraftBird.twitter.getAuthorization().isEnabled())
 			{
 				net.craftrepo.CraftBird.CraftBird.config.load();
 				String[] users = ((String[]) net.craftrepo.CraftBird.CraftBird.config.getProperty("users"));
-
+				if (users == null)
+				{
+					CraftBird.log.warning("[Twitter] No users defined in the config! Turning updates off.");
+					CraftBird.updates = false;
+					CraftBird.scheduler.cancelAllTasks();
+					return;
+				} 
 				for (String s : users)
 				{
 					try 
 					{
 						List<Status> statuses;
 						statuses = CraftBird.twitter.getFriendsTimeline();
-						if (statuses != lastStatuses)
+						if (lastStatuses == null || !statuses.containsAll(lastStatuses))
 						{
 							for (Status status : statuses) 
 							{
